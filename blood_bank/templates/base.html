@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank System</title>
+    
+    <style>
+        /* Notification Styles */
+        .notification-btn {
+            position: relative;
+            padding: 10px 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .notification-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 15px;
+            text-align: center;
+        }
+
+        .notification-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #fff;
+            min-width: 300px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 10px;
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item.unread {
+            background: #f0f7ff;
+        }
+
+        .notification-item:hover {
+            background: #f5f5f5;
+        }
+
+        .notification-item strong {
+            display: block;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .notification-item p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .notification-item small {
+            color: #999;
+            font-size: 0.8em;
+        }
+
+        /* Notification types */
+        .notification-success {
+            border-left: 4px solid #28a745;
+        }
+
+        .notification-info {
+            border-left: 4px solid #17a2b8;
+        }
+
+        .notification-warning {
+            border-left: 4px solid #ffc107;
+        }
+
+        .notification-error {
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Show dropdown on hover */
+        .notification-dropdown:hover .notification-content {
+            display: block;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .notification-content {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Your existing navbar or header -->
+    <div class="notification-dropdown">
+        <button class="notification-btn">
+            Notifications 
+            {% with unread_count=user.admin_notifications.filter.count %}
+                {% if unread_count > 0 %}
+                    <span class="badge">{{ unread_count }}</span>
+                {% endif %}
+            {% endwith %}
+        </button>
+        <div class="notification-content">
+            {% for notification in user.admin_notifications.all|slice:":5" %}
+                <div class="notification-item {% if not notification.read %}unread{% endif %} notification-{{ notification.notification_type }}"
+                     data-notification-id="{{ notification.id }}">
+                    <strong>{{ notification.title }}</strong>
+                    <p>{{ notification.message }}</p>
+                    <small>{{ notification.created_at|timesince }} ago</small>
+                </div>
+            {% empty %}
+                <div class="notification-item">
+                    <p>No notifications</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Your existing content -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationItems = document.querySelectorAll('.notification-item');
+            const badge = document.querySelector('.badge');
+            let unreadCount = parseInt(badge?.textContent || '0');
+            
+            notificationItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const notificationId = this.dataset.notificationId;
+                    if (!notificationId) return;  // Skip if no ID (empty state)
+
+                    if (this.classList.contains('unread')) {
+                        fetch(`/notifications/mark-as-read/${notificationId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken'),
+                                'Content-Type': 'application/json'
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                this.classList.remove('unread');
+                                unreadCount--;
+                                updateBadge();
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    }
+                });
+            });
+
+            function updateBadge() {
+                if (badge) {
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount;
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+
+            // Function to get CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdown = document.querySelector('.notification-dropdown');
+                if (!dropdown.contains(event.target)) {
+                    const content = dropdown.querySelector('.notification-content');
+                    content.style.display = 'none';
+                }
+            });
+
+            // Toggle dropdown on mobile
+            const notificationBtn = document.querySelector('.notification-btn');
+            notificationBtn.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const content = document.querySelector('.notification-content');
+                content.style.display = content.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+    <!-- Your page content here -->
+{% endblock %}

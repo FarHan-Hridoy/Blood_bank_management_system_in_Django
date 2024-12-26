@@ -1,0 +1,7 @@
+<h1>Are you sure you want to delete this donor?</h1>
+<p>Name: {{ donor.name }}</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+</form>
+<a href="{% url 'donor_list' %}">Cancel</a>

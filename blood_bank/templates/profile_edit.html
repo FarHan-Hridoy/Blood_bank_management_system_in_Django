@@ -1,0 +1,15 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h2>Edit Profile</h2>
+  <form method="POST">
+    {% csrf_token %}
+    
+    <!-- Render the profile form -->
+    {{ form.as_p }}
+
+    <button type="submit">Save changes</button>
+  </form>
+
+  <a href="{% url 'blood_bank:profile' %}">Back to Profile</a>
+{% endblock %}

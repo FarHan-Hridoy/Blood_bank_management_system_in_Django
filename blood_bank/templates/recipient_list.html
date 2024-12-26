@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipient List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color:rgb(233, 19, 19);
+            --background-color: #f0f3f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .search-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            padding: 12px 20px;
+            width: 300px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 25px 0 0 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+        }
+
+        .search-button {
+            padding: 12px 25px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 0 25px 25px 0;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            background-color: var(--primary-color);
+        }
+
+        .recipient-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .recipient-card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 20px;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .recipient-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px var(--shadow-color);
+        }
+
+        .recipient-card strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .recipient-card p {
+            margin: 10px 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--secondary-color);
+            padding: 10px 20px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .search-input, .search-button {
+                width: 100%;
+                max-width: 300px;
+                border-radius: 25px;
+                margin-bottom: 10px;
+            }
+
+            .recipient-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recipient List</h1>
+
+        <form method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search by name or blood group" value="{{ query }}" class="search-input">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+
+        <ul class="recipient-list">
+            {% if recipients %}
+                {% for recipient in recipients %}
+                    <li class="recipient-card">
+                        <p><strong>Name:</strong> {{ recipient.user.username }}</p>
+                        <p><strong>Blood Group:</strong> {{ recipient.blood_group }}</p>
+                        <p><strong>Needed By:</strong> {{ recipient.needed_date }}</p>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <li class="no-results">No recipients found.</li>
+            {% endif %}
+        </ul>
+
+        <a href="/" class="back-link">Back to Home</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.recipient-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

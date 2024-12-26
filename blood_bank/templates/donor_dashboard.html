@@ -1,0 +1,320 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donor Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #f0f8ff, #e6e6fa);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      font-size: 28px;
+      color: rgb(225, 24, 41);
+      text-align: center;
+    }
+    .donor-info {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .donor-info p {
+      margin: 8px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .actions {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .actions a {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      color: #fff;
+      background-color: #007bff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    .actions a:hover {
+      background-color: #0056b3;
+    }
+    .actions .logout {
+      background-color: rgb(240, 17, 17);
+    }
+    .actions .logout:hover {
+      background-color: rgb(238, 98, 98);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome, {{ donor.full_name }}!</h1>
+    <p style="text-align: center;">Thank you for being a valuable part of our donor community.</p>
+
+    <div class="donor-info">
+      <h2>Your Information</h2>
+      <p><strong>Username:</strong> {{ donor.username }}</p>
+      <p><strong>Email:</strong> {{ donor.email }}</p>
+      <p><strong>Phone:</strong> {{ donor.phone }}</p>
+      <p><strong>Blood Group:</strong> {{ donor.blood_group }}</p>
+      <p><strong>Gender:</strong> {{ donor.gender }}</p>
+      <p><strong>Date of Birth:</strong> {{ donor.dob }}</p>
+      <p><strong>Last Donation Date:</strong> {{ donor.last_donation_date }}</p>
+      <p><strong>Request Status:</strong> {{ donor.status }}</p>
+      <p><strong>Emergency Donor:</strong> {{ donor.emergency_donor|yesno:"Yes,No" }}</p>
+      <p><strong>Health Confirmed:</strong> {{ donor.health_confirmed|yesno:"Yes,No" }}</p>
+      <p><strong>Request Status:</strong> {{ donor.status }}</p>
+    </div>
+
+    <div class="actions">
+      <a href="{% url 'donor_logout' %}" class="logout">Logout</a>
+       
+    </div>
+  </div>
+</body>
+</html> 
+ {% endcomment %}
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donor Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: rgb(225, 24, 41);
+      --secondary-color: #007bff;
+      --background-start: #f0f8ff;
+      --background-end: #e6e6fa;
+      --card-background: rgba(255, 255, 255, 0.25);
+      --text-color: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--background-start), var(--background-end));
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: var(--card-background);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 30px;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+    }
+
+    h1, h2 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-top: 30px;
+    }
+
+    p {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+      color: var(--text-color);
+    }
+
+    .donor-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .info-card strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--primary-color);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .action-btn {
+      padding: 12px 24px;
+      color: #fff;
+      background-color: var(--secondary-color);
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .action-btn:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .logout {
+      background-color: var(--primary-color);
+    }
+
+    .logout:hover {
+      background-color: #c41c30;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .donor-info {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="fade-in" style="animation-delay: 0.1s;">Welcome, {{ donor.full_name }}!</h1>
+    <p class="fade-in" style="animation-delay: 0.2s;">Thank you for being a valuable part of our donor community.</p>
+
+    <h2 class="fade-in" style="animation-delay: 0.3s;">Your Information</h2>
+    <div class="donor-info">
+      <div class="info-card fade-in" style="animation-delay: 0.4s;">
+        <strong>Username:</strong> {{ donor.username }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 0.5s;">
+        <strong>Full Name:</strong> {{ donor.full_name }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 0.5s;">
+        <strong>Email:</strong> {{ donor.email }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 0.6s;">
+        <strong>Phone:</strong> {{ donor.phone }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 0.7s;">
+        <strong>Blood Group:</strong> {{ donor.blood_group }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 0.8s;">
+        <strong>Gender:</strong> {{ donor.gender }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 0.9s;">
+        <strong>Date of Birth:</strong> {{ donor.dob }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 1s;">
+        <strong>Last Donation:</strong> {{ donor.last_donation_date }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 1.1s;">
+        <strong>Request Status:</strong> {{ donor.status }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 0.5s;">
+        <strong>Preferred Time:</strong> {{ donor.preferred_times }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 1.2s;">
+        <strong>Emergency Donor:</strong> {{ donor.emergency_donor|yesno:"Yes,No" }}
+      </div>
+      <div class="info-card fade-in" style="animation-delay: 1.3s;">
+        <strong>Health Confirmed:</strong> {{ donor.health_confirmed|yesno:"Yes,No" }}
+      </div>
+    </div>
+
+    <div class="actions fade-in" style="animation-delay: 1.4s;">
+      <a href="{% url 'donor_logout' %}" class="action-btn logout">Logout</a>
+      
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const fadeElements = document.querySelectorAll('.fade-in');
+      fadeElements.forEach((element) => {
+        element.style.opacity = '1';
+      });
+    });
+  </script>
+</body>
+</html>

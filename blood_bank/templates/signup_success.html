@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign-Up Successful</title>
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fad0c4, #a18cd1);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        .success-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #e11829;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: heartbeat 2s infinite;
+        }
+
+        .success-icon::before {
+            content: "❤️";
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            color: #e11829;
+            font-size: 2.5rem;
+            margin: 0 0 1rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 0 0 2rem;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .home-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #e11829;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .home-button:hover {
+            background: #ff1f1f;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(225, 24, 41, 0.3);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #e11829;
+            animation: confetti 5s ease-in-out infinite;
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .message {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: rgba(225, 24, 41, 0.1);
+            border-radius: 10px;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .message strong {
+            color: #e11829;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon"></div>
+        <h1>Thank You!</h1>
+        <p>Your registration as a blood donor has been successfully completed. You're now part of a community dedicated to saving lives.</p>
+        
+        <div class="message">
+            <strong>Remember:</strong> Your contribution can make a real difference in someone's life.
+        </div>
+        
+        <a href="/" class="home-button">Return to Homepage</a>
+    </div>
+
+    <script>
+        // Create confetti effect
+        function createConfetti() {
+            const confettiColors = ['#e11829', '#ff9a9e', '#fad0c4', '#a18cd1'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                document.body.appendChild(confetti);
+            }
+        }
+        createConfetti();
+    </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donor Directory</title>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .search-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out 0.2s backwards;
+        }
+
+        form {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        input[type="text"] {
+            padding: 1rem 1.5rem;
+            width: 100%;
+            max-width: 500px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66,153,225,0.2);
+        }
+
+        button {
+            padding: 1rem 2rem;
+            background:rgb(232, 43, 43);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background:rgb(242, 166, 168);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66,153,225,0.3);
+        }
+
+        .donors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .donor-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .donor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .donor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg,rgb(223, 48, 48),rgb(234, 102, 102));
+        }
+
+        .donor-card p {
+            margin: 0.8rem 0;
+            color: #4a5568;
+            font-size: 1.1rem;
+        }
+
+        .donor-card strong {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .blood-group {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #ebf8ff;
+            color:rgb(220, 24, 24);
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .actions a {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: #4299e1;
+            border: 2px solid #4299e1;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .actions a:hover {
+            background: #4299e1;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .no-donors {
+            text-align: center;
+            padding: 2rem;
+            color: #718096;
+            font-size: 1.2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            form {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .donors-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Blood Donor Directory</h1>
+
+        <div class="search-container">
+            <form method="get">
+                <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ query }}" 
+                    placeholder="Search by name or blood group..."
+                    autocomplete="off"
+                >
+                <button type="submit">Search Donors</button>
+            </form>
+        </div>
+
+        <div class="donors-grid">
+            {% if donors %}
+                {% for donor in donors %}
+                    <div class="donor-card">
+                        <p><strong>Name:</strong> {{ donor.user.get_full_name|default:donor.user.username }}</p>
+                        <p><strong>Blood Group:</strong> <span class="blood-group">{{ donor.blood_group }}</span></p>
+                        <div class="actions">
+                            <a href="/donors/{{ donor.id }}/edit">Edit Profile</a>
+                            <a href="/donors/{{ donor.id }}/delete">Remove</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-donors">
+                    <p>No donors found matching your search criteria.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

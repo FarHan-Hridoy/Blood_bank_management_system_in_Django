@@ -1,0 +1,1025 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Inventory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgba(0, 0, 0, 0.1); /* Transparent background */
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(255, 251, 251, 0); /* Slightly transparent background for the container */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Blood Bank Card Styles */
+        .card {
+            display: inline-block;
+            width: 250px;
+            margin: 20px;
+            padding: 20px;
+            background-color:rgba(39, 194, 233, 0.91); /* Deep blood red color */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            color: white;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-header {
+            background-color:rgb(165, 26, 26); /* Darker blood red for header */
+            color: white;
+            font-weight: bold;
+            padding: 10px 0;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-body {
+            margin-top: 15px;
+        }
+
+        .card-footer {
+            margin-top: 15px;
+        }
+
+        .low-inventory {
+            color: #e60000;
+            font-weight: bold;
+        }
+
+        .high-inventory {
+            color:rgb(245, 245, 245);
+            font-weight: bold;
+        }
+
+        /* Blood Drop Icon as Logo */
+        .blood-icon {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            font-size: 3em;
+            color:rgb(249, 0, 0); /* Bright red color */
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Animation for the Blood Drop Icon */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Empty message */
+        .no-data {
+            color: #888;
+            font-style: italic;
+            font-size: 1.2em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card {
+                width: 90%;
+                margin: 10px auto;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        /* Search Input */
+        #searchInput {
+            padding: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Blood Inventory</h1>
+
+        <!-- Search Box -->
+        <input type="text" id="searchInput" placeholder="Search Blood Type" onkeyup="searchBloodGroups()" />
+
+        <div class="inventory-cards">
+            {% for inventory in blood_inventory %}
+                <div class="card" data-blood-type="{{ inventory.blood_type|lower }}">
+                    <!-- Blood Drop Icon (Font Awesome) -->
+                    <i class="fas fa-tint blood-icon"></i>
+
+                    <div class="card-header">
+                        {{ inventory.blood_type|upper }} Blood
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Units Available:</strong> 
+                            <span class="{% if inventory.units < 10 %}low-inventory{% else %}high-inventory{% endif %}">
+                                {{ inventory.units }}
+                            </span>
+                        </p>
+                        <p><strong>Capacity:</strong> {{ inventory.capacity }}</p>
+                    </div>
+                    <div class="card-footer">
+                        {% if inventory.units < 10 %}
+                            <p>Low Stock</p>
+                        {% else %}
+                            <p>Stock is Sufficient</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-data">
+                    No blood inventory available.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function searchBloodGroups() {
+            var input = document.getElementById('searchInput').value.toLowerCase();  // Convert input to lowercase
+            var cards = document.querySelectorAll('.card');
+            
+            cards.forEach(function(card) {
+                var bloodType = card.getAttribute('data-blood-type').toLowerCase();  // Convert data-blood-type to lowercase
+                if (bloodType.includes(input)) {
+                    card.style.display = 'inline-block';  // Show card
+                } else {
+                    card.style.display = 'none';  // Hide card
+                }
+            });
+        }
+    </script>
+
+</body>
+</html> {% endcomment %}
+
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Inventory Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #c0392b;
+            --accent-color: #3498db;
+            --background-color: #f5f6fa;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 1s ease;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--card-bg);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin: 0 auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .inventory-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            animation: fadeInUp 1s ease;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.2);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            clip-path: circle(80px at 90% -20%);
+            transition: all 0.5s ease;
+        }
+
+        .card:hover::before {
+            clip-path: circle(300px at 90% -20%);
+        }
+
+        .card-header {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .blood-icon {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 8rem;
+            color: rgba(231, 76, 60, 0.1);
+            transform: rotate(-30deg);
+            transition: all 0.5s ease;
+        }
+
+        .card:hover .blood-icon {
+            transform: rotate(0deg) scale(1.2);
+            color: rgba(231, 76, 60, 0.2);
+        }
+
+        .card-body {
+            margin: 1.5rem 0;
+        }
+
+        .card-body p {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin: 0.5rem 0;
+        }
+
+        .units-counter {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 1rem 0;
+            display: block;
+        }
+
+        .low-inventory {
+            color: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+
+        .high-inventory {
+            color: #27ae60;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .status-low {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--primary-color);
+        }
+
+        .status-good {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+        }
+
+        .no-data {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            padding: 2rem;
+            grid-column: 1 / -1;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                margin: 1rem 0;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Blood Inventory Management</h1>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search blood type..." onkeyup="searchBloodGroups()">
+        </div>
+
+        <div class="inventory-cards">
+            {% for inventory in blood_inventory %}
+                <div class="card" data-blood-type="{{ inventory.blood_type|lower }}">
+                    <i class="fas fa-tint blood-icon"></i>
+                    <div class="card-header">
+                        {{ inventory.blood_type|upper }}
+                    </div>
+                    <div class="card-body">
+                        <span class="units-counter {% if inventory.units < 10 %}low-inventory{% else %}high-inventory{% endif %}">
+                            {{ inventory.units }}
+                        </span>
+                        <p>Units Available</p>
+                        <p>Maximum Capacity: {{ inventory.capacity }}</p>
+                        
+                        {% if inventory.units < 10 %}
+                            <div class="status-badge status-low">
+                                <i class="fas fa-exclamation-triangle"></i> Low Stock Alert
+                            </div>
+                        {% else %}
+                            <div class="status-badge status-good">
+                                <i class="fas fa-check-circle"></i> Stock Sufficient
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-data">
+                    <i class="fas fa-database"></i>
+                    <p>No blood inventory data available</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function searchBloodGroups() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const bloodType = card.getAttribute('data-blood-type').toLowerCase();
+                const display = bloodType.includes(input) ? 'block' : 'none';
+                
+                if (display === 'none') {
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.display = display;
+                    }, 300);
+                } else {
+                    card.style.display = display;
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, 10);
+                }
+            });
+        }
+
+        // Add animation to cards on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html> {% endcomment %}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank Inventory Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #ff6b6b;
+            --accent-color: #2ecc71;
+            --text-color: #2c3e50;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(231, 76, 60, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(240, 242, 245, 0.8) 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 1rem auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s ease;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.9) 0%, rgba(255, 107, 107, 0.9) 100%);
+            padding: 1.5rem;
+            border-radius: 20px;
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            margin: 1rem 0;
+            animation: fadeInUp 1s ease;
+            text-align: center;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-color);
+            margin: 0 auto;
+            display: block;
+            backdrop-filter: blur(5px);
+        }
+
+        #searchInput:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.2);
+        }
+
+        .inventory-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            padding: 1.5rem;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease;
+            box-shadow: 0 8px 32px 0 rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.2);
+        }
+
+        .blood-icon {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 6rem;
+            color: rgb(240, 97, 81);
+            transform: rotate(-30deg);
+            transition: all 0.5s ease;
+            animation: floatingIcon 3s ease-in-out infinite;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            text-align: center;
+            background: var(--glass-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(231, 76, 60, 0.1);
+            animation: fadeInUp 1s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .chart-card {
+            padding: 1.5rem;
+            height: 300px;
+            background: var(--glass-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(231, 76, 60, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .units-counter {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+            display: block;
+            color: var(--primary-color);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .status-low {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            animation: pulse 2s infinite;
+        }
+
+        .status-good {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .blood-drop {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.8) 0%, rgba(255, 107, 107, 0.8) 100%);
+            border-radius: 0 50% 50% 50%;
+            transform: rotate(45deg);
+            pointer-events: none;
+            animation: dropFall 2s linear infinite;
+        }
+
+        @keyframes floatingIcon {
+            0%, 100% { transform: translateY(0) rotate(-30deg); }
+            50% { transform: translateY(-10px) rotate(-25deg); }
+        }
+
+        @keyframes dropFall {
+            0% { transform: translateY(-100%) rotate(45deg) scale(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(45deg) scale(1); opacity: 0; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0.5rem; }
+            .header h1 { font-size: 2rem; }
+            .inventory-cards { grid-template-columns: 1fr; }
+            .stats-container { grid-template-columns: 1fr; }
+            .charts-container { grid-template-columns: 1fr; }
+            .card { margin: 0.5rem 0; }
+            #searchInput { max-width: 90%; }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.5rem; }
+            .stat-number { font-size: 2rem; }
+            .units-counter { font-size: 1.5rem; }
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: transparent;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            transform: scale(1.1) rotate(-360deg);
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Home Button -->
+    <button class="home-button" onclick="window.location.href='/'">
+        <i class="fas fa-home"></i>
+    </button>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-heartbeat"></i> Blood Bank Inventory</h1>
+        </div>
+
+        <div class="top-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search blood type..." onkeyup="searchBloodGroups()">
+            </div>
+
+            <div class="inventory-cards">
+                {% for inventory in blood_inventory %}
+                    <div class="card" data-blood-type="{{ inventory.blood_type|lower }}">
+                        <i class="fas fa-tint blood-icon"></i>
+                        <div class="card-header">
+                            <h2>{{ inventory.blood_type|upper }}</h2>
+                        </div>
+                        <div class="card-body">
+                            <span class="units-counter">{{ inventory.units }}</span>
+                            <p>Units Available</p>
+                            <p>Maximum Capacity: {{ inventory.capacity }}</p>
+                            {% if inventory.units < 10 %}
+                                <div class="status-badge status-low">
+                                    <i class="fas fa-exclamation-triangle"></i> Low Stock Alert
+                                </div>
+                            {% else %}
+                                <div class="status-badge status-good">
+                                    <i class="fas fa-check-circle"></i> Stock Sufficient
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="no-data">
+                        <i class="fas fa-database"></i>
+                        <p>No blood inventory data available</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <i class="fas fa-hospital-user fa-2x" style="color: var(--primary-color)"></i>
+                <div class="stat-number">2,547</div>
+                <p>Total Donations This Month</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-procedures fa-2x" style="color: var(--primary-color)"></i>
+                <div class="stat-number">1,873</div>
+                <p>Units Distributed</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-user-shield fa-2x" style="color: var(--primary-color)"></i>
+                <div class="stat-number">98%</div>
+                <p>Storage Efficiency</p>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-card">
+                <canvas id="bloodTypeChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Charts
+        const bloodTypeChart = new Chart(document.getElementById('bloodTypeChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                datasets: [{
+                    data: [35, 15, 25, 10, 8, 4, 40, 12],
+                    backgroundColor: [
+                        '#e74c3c', '#ff6b6b', '#e67e22', '#f39c12',
+                        '#3498db', '#2980b9', '#2ecc71', '#27ae60'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'right' },
+                    title: {
+                        display: true,
+                        text: 'Blood Type Distribution',
+                        color: '#2c3e50',
+                        font: { size: 16 }
+                    }
+                }
+            }
+        });
+
+        const trendsChart = new Chart(document.getElementById('trendsChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Donations',
+                    data: [1200, 1900, 1700, 2100, 2500, 2547],
+                    borderColor: '#e74c3c',
+                    tension: 0.4
+                }, {
+                    label: 'Usage',
+                    data: [1000, 1600, 1400, 1900, 2200, 1873],
+                    borderColor: '#3498db',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: {
+                        display: true,
+                        text: 'Donation vs Usage Trends',
+                        color: '#2c3e50',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                    }
+                }
+            }
+        });
+
+        // Blood Drop Animation
+        function createBloodDrop() {
+            const drop = document.createElement('div');
+            drop.className = 'blood-drop';
+            drop.style.left = Math.random() * window.innerWidth + 'px';
+            drop.style.width = Math.random() * 10 + 5 + 'px';
+            drop.style.height = drop.style.width;
+            document.body.appendChild(drop);
+
+            drop.addEventListener('animationend', () => {
+                drop.remove();
+            });
+        }
+
+        setInterval(createBloodDrop, 2000);
+
+        // Search Functionality
+        function searchBloodGroups() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const bloodType = card.getAttribute('data-blood-type').toLowerCase();
+                const display = bloodType.includes(input) ? 'block' : 'none';
+                
+                if (display === 'none') {
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.display = display;
+                    }, 300);
+                } else {
+                    card.style.display = display;
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, 10);
+                }
+            });
+        }
+
+        // Add animation to cards on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

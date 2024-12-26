@@ -1,0 +1,435 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Recipient</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+    <h2 class="mb-4 text-center">Register New Recipient</h2>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" novalidate action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Username -->
+        <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" id="username" name="username" class="form-control" required 
+                   aria-required="true" pattern="[A-Za-z0-9_]+" 
+                   title="Only alphanumeric characters and underscores are allowed">
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required minlength="8" 
+                   aria-required="true" title="Password must be at least 8 characters">
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="8">
+        </div>
+
+        <!-- Full Name -->
+        <div class="mb-3">
+            <label for="full_name" class="form-label">Full Name:</label>
+            <input type="text" id="full_name" name="full_name" class="form-control" required>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="mb-3">
+            <label for="dob" class="form-label">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" class="form-control" required>
+        </div>
+
+        <!-- Contact Details -->
+        <div class="mb-3">
+            <label for="phone_number" class="form-label">Contact (Phone):</label>
+            <input type="text" id="phone_number" name="phone_number" class="form-control" required 
+                   pattern="^\d{10}$" title="Enter a valid 10-digit phone number">
+        </div>
+
+        <!-- Blood Type -->
+        <div class="mb-3">
+            <label for="blood_type" class="form-label">Blood Type:</label>
+            <select id="blood_type" name="blood_type" class="form-select" required>
+                <option value="">Select Blood Type</option>
+                {% for blood_group in blood_groups %}
+                    <option value="{{ blood_group.id }}">{{ blood_group.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Units Needed -->
+        {% load range_filter %}
+        <div class="mb-3">
+            <label for="units" class="form-label">Need Units:</label>
+            <select id="units" name="units" class="form-select" required>
+                {% for i in 8|range_filter %}
+                    <option value="{{ i|add:1 }}">{{ i|add:1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <!-- By Date -->
+<div class="mb-3">
+     <label for="by_date" class="form-label">Needed By:</label>
+    <input type="date" id="by_date" name="by_date" class="form-control" required>
+</div>
+
+        <!-- NID Number -->
+        <div class="mb-3">
+            <label for="nid_number" class="form-label">NID Number:</label>
+            <input type="text" id="nid_number" name="nid_number" class="form-control" required 
+                   pattern="^\d{10}$" title="Enter a valid 10-digit NID number">
+        </div>
+
+        <!-- Location -->
+        <div class="mb-3">
+            <label for="location" class="form-label">Location:</label>
+            <input type="text" id="location" name="location" class="form-control">
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="mb-3">
+            <label for="emergency_contact_name" class="form-label">Emergency Contact Name:</label>
+            <input type="text" id="emergency_contact_name" name="emergency_contact_name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="emergency_contact_phone" class="form-label">Emergency Contact Phone:</label>
+            <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" class="form-control" required pattern="^\d{10}$">
+        </div>
+
+        <!-- Consent -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" id="consent" name="consent" class="form-check-input" required>
+            <label for="consent" class="form-check-label">I give consent for receiving blood.</label>
+        </div>
+
+        <!-- Signature -->
+        <div class="mb-3">
+            <label for="signature" class="form-label">Signature:</label>
+            <input type="text" id="signature" name="signature" class="form-control" required>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary">Register Recipient</button>
+    </form>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Recipient</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #dc3545;
+            --secondary-color: #6c757d;
+            --background-color: #f8f9fa;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+        
+        .form-label {
+            font-weight: bold;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            transform: translateY(-2px);
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 20px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .login-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .login-button:hover {
+            transform: scale(1.1) rotate(360deg);
+            background-color: #c82333;
+        }
+        
+        .icon-input {
+            position: relative;
+        }
+        
+        .icon-input i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+        }
+        
+        .icon-input input {
+            padding-left: 35px;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            transform: scale(1.1) rotate(-360deg);
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Home Button -->
+    <button class="home-button" onclick="window.location.href='/'">
+        <i class="fas fa-home"></i>
+    </button>
+    <div class="container">
+        <h2 class="mb-4 text-center animate-fade-in-up">Register New Recipient</h2>
+
+        <!-- Form -->
+        <form method="POST" enctype="multipart/form-data" novalidate action="{% url 'register' %}">
+            {% csrf_token %}
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="mt-3 animate-fade-in-up">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Username -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="username" class="form-label">Username:</label>
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" name="username" class="form-control" required 
+                       aria-required="true" pattern="[A-Za-z0-9_]+" 
+                       title="Only alphanumeric characters and underscores are allowed">
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="password" class="form-label">Password:</label>
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" name="password" class="form-control" required minlength="8" 
+                       aria-required="true" title="Password must be at least 8 characters">
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="confirm_password" class="form-label">Confirm Password:</label>
+                <i class="fas fa-lock"></i>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="8">
+            </div>
+
+            <!-- Full Name -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="full_name" class="form-label">Full Name:</label>
+                <i class="fas fa-user-circle"></i>
+                <input type="text" id="full_name" name="full_name" class="form-control" required>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="dob" class="form-label">Date of Birth:</label>
+                <i class="fas fa-calendar-alt"></i>
+                <input type="date" id="dob" name="dob" class="form-control" required>
+            </div>
+
+            <!-- Contact Details -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="phone_number" class="form-label">Contact (Phone):</label>
+                <i class="fas fa-phone"></i>
+                <input type="text" id="phone_number" name="phone_number" class="form-control" required 
+                       pattern="^\d{10}$" title="Enter a valid 10-digit phone number">
+            </div>
+
+            <!-- Blood Type -->
+            <div class="mb-3 animate-fade-in-up">
+                <label for="blood_type" class="form-label">Blood Type:</label>
+                <select id="blood_type" name="blood_type" class="form-select" required>
+                    <option value="">Select Blood Type</option>
+                    {% for blood_group in blood_groups %}
+                        <option value="{{ blood_group.id }}">{{ blood_group.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Units Needed -->
+            {% load range_filter %}
+            <div class="mb-3 animate-fade-in-up">
+                <label for="units" class="form-label">Need Units:</label>
+                <select id="units" name="units" class="form-select" required>
+                    {% for i in 8|range_filter %}
+                        <option value="{{ i|add:1 }}">{{ i|add:1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- By Date -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                 <label for="by_date" class="form-label">Needed By:</label>
+                 <i class="fas fa-calendar-check"></i>
+                <input type="date" id="by_date" name="by_date" class="form-control" required>
+            </div>
+
+            <!-- NID Number -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="nid_number" class="form-label">NID Number:</label>
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="nid_number" name="nid_number" class="form-control" required 
+                       pattern="^\d{10}$" title="Enter a valid 10-digit NID number">
+            </div>
+
+            <!-- Location -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="location" class="form-label">Location:</label>
+                <i class="fas fa-map-marker-alt"></i>
+                <input type="text" id="location" name="location" class="form-control">
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="emergency_contact_name" class="form-label">Emergency Contact Name:</label>
+                <i class="fas fa-user-friends"></i>
+                <input type="text" id="emergency_contact_name" name="emergency_contact_name" class="form-control" required>
+            </div>
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="emergency_contact_phone" class="form-label">Emergency Contact Phone:</label>
+                <i class="fas fa-phone-alt"></i>
+                <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" class="form-control" required pattern="^\d{10}$">
+            </div>
+
+            <!-- Consent -->
+            <div class="mb-3 form-check animate-fade-in-up">
+                <input type="checkbox" id="consent" name="consent" class="form-check-input" required>
+                <label for="consent" class="form-check-label">I give consent for receiving blood.</label>
+            </div>
+
+            <!-- Signature -->
+            <div class="mb-3 animate-fade-in-up icon-input">
+                <label for="signature" class="form-label">Signature:</label>
+                <i class="fas fa-signature"></i>
+                <input type="text" id="signature" name="signature" class="form-control" required>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary animate-fade-in-up">Register Recipient</button>
+        </form>
+    </div>
+
+    <!-- Animated Login Button -->
+    <button class="login-button" onclick="window.location.href='/login/'">
+        <i class="fas fa-sign-in-alt"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formElements = document.querySelectorAll('.animate-fade-in-up');
+            formElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>
+
