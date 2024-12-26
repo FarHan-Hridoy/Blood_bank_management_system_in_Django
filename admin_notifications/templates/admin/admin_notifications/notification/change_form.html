@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .notification-info { background-color: #cce5ff; }
+    .notification-success { background-color: #d4edda; }
+    .notification-warning { background-color: #fff3cd; }
+    .notification-error { background-color: #f8d7da; }
+    .notification-box {
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notification-box notification-{{ original.notification_type }}">
+    <h3>{{ original.title }}</h3>
+    <p>{{ original.message }}</p>
+    <small>Sent on: {{ original.created_at }}</small>
+</div>
+{{ block.super }}
+{% endblock %}

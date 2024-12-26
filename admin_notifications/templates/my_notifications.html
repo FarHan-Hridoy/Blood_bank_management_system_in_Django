@@ -1,0 +1,8 @@
+<!-- templates/my_notifications.html -->
+{% for notification in notifications %}
+    <div class="notification {{ notification.notification_type }}">
+        <h3>{{ notification.title }}</h3>
+        <p>{{ notification.message }}</p>
+        <small>{{ notification.created_at }}</small>
+    </div>
+{% endfor %}
